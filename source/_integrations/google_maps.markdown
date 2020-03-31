@@ -15,7 +15,17 @@ The `google_maps` platform allows you to detect presence using the unofficial AP
 You first need to create an additional Google account and share your location with that account. This integration will use that account to fetch the location of your device(s). 
 
 1. You have to setup sharing through the Google Maps app on your mobile phone. You can find more information [here](https://support.google.com/accounts?p=location_sharing).
-2. You need to use the cookies from that account after you have properly authenticated which you can retrieve with either [Export cookies](https://addons.mozilla.org/en-US/firefox/addon/export-cookies-txt/?src=search) for Firefox (make sure that "Prefix HttpOnly cookies" is unchecked) or [cookies.txt](https://chrome.google.com/webstore/detail/cookiestxt/njabckikapfpffapmjgojcnbfjonfjfg?hl=en-US) for Chrome/Chromium.
+2. You need to use the cookies from that account after you have properly authenticated which you can retrieve with:
+    * Firefox:
+      * Use the add-on "[Export cookies](https://addons.mozilla.org/en-US/firefox/addon/export-cookies-txt/)", but make sure that "Prefix HttpOnly cookies" is unchecked
+      * If you are using Firefox Containers, you may need to use the add-on "[Cookie Quick Manager](https://addons.mozilla.org/firefox/addon/cookie-quick-manager/)" instead, however, this is not recommended, as it will only export or copy the cookies to the clipboard in JSON format (until [a feature request is implemented to resolve it](https://github.com/ysard/cookie-quick-manager/issues/94)). You will need to rewrite these values using these PCRE-regex statements:
+      ```
+      s/\[?\{\s+"Host raw": "(http[s]*):\/\/([^\/]+)\/",\s+"Name raw": "([^"]+)",\s+"Path raw": "([^"]+)",\s+"Content raw": "([^"]+)",\s+"Expires": "[^"]+",\s+"Expires raw": "([^"]+)",\s+"Send for": "[^"]+",\s+"Send for raw": "[^"]*",\s+"HTTP only raw": "[^"]*",\s+"SameSite raw": "[^"]*",\s+"This domain only": "([^"]+)",\s+"This domain only raw": "[^"]*",\s+"Store raw": "[^"]*",\s+"First Party Domain": "[^"]*"\s+\}\,*\]?/$2\t$7\t$4\t$1\t$6\t$3\t$5/gm
+      s/(https|Valid for host only)/TRUE/g
+      s/(http|Valid for subdomains)/FALSE/g
+      ```
+    * Chrome/Chromium based browsers
+      * Use the extension [cookies.txt](https://chrome.google.com/webstore/detail/cookiestxt/njabckikapfpffapmjgojcnbfjonfjfg?hl=en-US) 
 3. Save the cookie file to your Home Assistant configuration directory with the following name: `.google_maps_location_sharing.cookies.` followed by the slugified username of the NEW Google account. Make sure to use the `.com` TLD (e.g., maps.google.com), otherwise the cookie won't be able to provide a valid session.
    - For example: If your email address was `location.tracker@gmail.com`, the filename would be: `.google_maps_location_sharing.cookies.location_tracker_gmail_com`.
 
